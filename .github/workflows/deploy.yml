@@ -43,10 +43,21 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
           port: ${{ secrets.EC2_PORT }}
           script: |
-            curl -fsSL https://rpm.nodesource.com/setup_18.x | sudo bash -
-            sudo yum install -y nodejs
+            # Update apt and install Node.js 18
+            curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+            sudo apt-get update
+            sudo apt-get install -y nodejs
+
+            # Install pm2 globally
             sudo npm install -g pm2
+
+            # Navigate to the project directory
             cd ${{ secrets.PROJECT_DIR }}
+
+            # Install dependencies and build
             npm install
             npm run build
+
+            # Restart or start the app
             pm2 restart app || pm2 start npm --name "app" -- run dev
+
